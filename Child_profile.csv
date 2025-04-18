@@ -1,0 +1,16 @@
+ID,Name,Age,Gender,Language_Development,Motor_Development,Social_Emotional_Development,Self_Esteem,Mental_Health_Issue,Peer_Relationship,Teacher_Relationship,Parenting_Style,Family_Structure
+1,Walker,4,Male,4,5,2,3,No,3,4,Authoritarian,Normal
+2,Riley,4,Male,5,5,4,5,No,5,4,Democratic,Normal
+3,Laura,4,Female,5,4,2,2,No,1,3,Authoritarian,Normal
+4,Kuba,4,Male,5,4,2,5,No,4,4,Democratic,Single Mother
+5,Tangaroa,3,Male,4,4,2,5,No,3,4,Democratic,Single Mother
+6,Alice,4,Female,5,4,4,2,No,3,5,Authoritarian,High Conflict
+7,Maxine,4,Female,3,2,2,NA,Yes,2,2,Overprotective,Normal
+8,Ethan,3,Male,1,2,1,NA,Yes,1,2,Overprotective,Normal
+9,Logan,4,Male,5,5,3,5,No,4,4,Democratic,Normal
+10,Nyla,3,Female,5,4,3,4,No,3,4,Authoritarian,Normal
+11,Malakai,4,Male,5,5,4,5,No,4,4,Democratic,Normal
+12,Theo,3,Male,3,3,3,3,No,2,2,Democratic,Normal
+13,Hunter,3,Male,5,4,4,4,No,4,2,Authoritarian,Normal
+14,Cairo,3,Male,4,3,2,2,No,2,2,Neglectful,High Conflict
+15,Hiro,3,Male,2,3,1,NA,Yes,1,1,Overprotective,Single Mother

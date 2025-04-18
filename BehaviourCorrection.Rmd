@@ -1,0 +1,583 @@
+---
+title: "ECE Behaviour"
+author: "Sam Lee"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F)
+```
+
+The question I had as their teacher was what makes children's behaviour aggressive?
+And as a teacher, what can I do? Does positive intervention really work? Do children learn from punishments?
+
+ 
+
+About the Data
+
+I collected two sets of data: child profile and aggression event.
+Child profile data set describes developmental stages of a child, and describes possible factors such as relationship levels with peers and teachers, family structure and whether a child has a mental disease mainly Autism Spectrum Disorder. However, one child suffered from Rasmussen’s Encephalitis, which is a rare, chronic inflammatory neurological disease leading to progressive loss of motor skills and speech, paralysis on one side of the body (hemiparesis), seizures (often very severe), and cognitive decline. 
+
+Aggression event data set describes when in a day the event happened, cause, intensity, teacher intervention, and outcome of the intervention. 
+
+I have collected the data over 2 years in my classroom and the age group was preschooler, ranging from 36 months to 59 months, right before 5 years old. For the privacy of children, I did not collect or have an intention to share their names. Therefore, the name column has been removed at the beginning of this file. 
+
+
+
+## R Markdown
+```{r}
+# loading library
+library(dplyr)
+library(ggplot2)
+library(readr)
+library(patchwork)
+library(ggpubr)
+library(car)
+
+```
+
+
+```{r}
+# loading data set
+child_profiles <- read.csv("child_profile.csv")
+aggression_events <- read.csv("aggression_events.csv")
+aggression_events <- aggression_events|>
+  select(-Name)
+child_profiles <- child_profiles|>
+    select(-Name)
+
+# summary to see variable names and types
+summary(child_profiles)
+summary(aggression_events)
+
+```
+
+All the numerical variables are on the scale of 1 to 5. There is a miss typed value in Aggression Severity, which has a value of 55. 
+3 NA values in Self Esteem.
+
+
+
+```{r}
+aggression_events <- aggression_events|>
+  mutate(Aggression_Severity = ifelse(Aggression_Severity == 55, 5, Aggression_Severity))
+```
+This dataset can now be merged and I will do an EDA. 
+
+```{r}
+merged_df <- aggression_events |>
+  left_join(child_profiles, by = c("Child_ID" = "ID"))
+
+merged_df
+```
+
+
+I will do an EDA and visualise some important variables. 
+```{r}
+str(merged_df)
+summary(merged_df)
+```
+
+A way to see how aggressive a child is, we can look at the severity and frequency of a child's aggressive behaviours. 
+```{r}
+agg_stats <- merged_df |>
+  group_by(Child_ID) |>
+  summarise(
+    Frequency = n(),
+    Avg_Severity = mean(Aggression_Severity, na.rm = TRUE),
+    Max_Severity = max(Aggression_Severity, na.rm = TRUE)
+  ) |>
+  arrange(desc(Frequency))
+
+agg_stats
+
+
+mean(agg_stats$Frequency)
+mean(agg_stats$Avg_Severity)
+
+```
+The mean frequency of an aggressive behaviour per child is 7.87 - about 8 times. The mean aggression severity is 3.23 - about 3. 
+By looking at this table, some children, ID 7, 14, 4, 1 have shown much higher frequencies than the mean. And they seem to have a higher severity. 
+
+```{r}
+# Plot frequency
+ggplot(agg_stats, aes(x = factor(Child_ID), y = Frequency)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  labs(title = "Aggression Frequency per Child", x = "Child ID", y = "Number of Events") +
+  theme_minimal()
+
+# Plot average severity
+ggplot(agg_stats, aes(x = factor(Child_ID), y = Avg_Severity)) +
+  geom_bar(stat = "identity", fill = "darkorange") +
+  labs(title = "Average Aggression Severity per Child", x = "Child ID", y = "Avg Severity") +
+  theme_minimal()
+```
+By looking at the frequency plot, some children only have 3 or 4 recorded incidents, while others exceed 10 or more. This suggests a significant variation in aggression behaviours across the group. Many children have an average aggression severity equal or higher than 3. Number 7 has the most events with the highest average severity of 5. Number 1 and 4 also have a high frequency of events with high average aggression severity. I have multiplied their frequency and severity to create an aggression score. 
+
+```{r}
+agg_score <- merged_df |>
+  group_by(Child_ID) |>
+  summarise(
+    Frequency = n(),
+    Avg_Severity = mean(Aggression_Severity, na.rm = TRUE),
+    Aggression_Score = Frequency * Avg_Severity
+  )
+merged_df <- merged_df |>
+  left_join(agg_score, by = "Child_ID")
+
+ggplot(agg_score, aes(x = factor(Child_ID), y = Aggression_Score)) +
+  geom_bar(stat = "identity", fill = "firebrick") +
+  labs(title = "Aggression Score per Child", x = "Child ID", y = "Score") +
+  theme_minimal()
+
+```
+
+
+
+```{r}
+g1 <- ggplot(merged_df, aes(x = Aggression_Type)) +
+  geom_bar(fill = "purple") +
+  labs(title = "Distribution of Aggression Types", x = "Type", y = "Count") +
+  theme_minimal()
+```
+Mainly the aggression event is hitting. Sometimes biting. 
+The severity is highly correlated to the types.  
+
+```{r}
+g2<- ggplot(merged_df, aes(x = Aggression_Type, y = Aggression_Severity)) +
+  geom_boxplot(fill = "skyblue") +
+  labs(title = "Aggression Severity by Type", x = "Aggression Type", y = "Severity") +
+  theme_minimal()
+
+g1+g2
+```
+When I collected the data, I measured how much each aggressive behaviour physically or emotionally harmed other children. Unsurprisingly, biting had the highest severity, with most incidents rated at the maximum level of 5. Hitting also caused considerable harm — it had an average severity of 4, but ranged from 2 to 5 depending on the situation and force used.
+
+Throwing objects proved to be particularly dangerous. Although it might seem less harmful at first, it consistently posed a high risk, with severity scores ranging from 4 to 5, especially when items struck other children.
+
+In contrast, verbal abuse — such as swearing, shouting, and teasing — is clearly a significant concern in the classroom. While it doesn’t cause physical injury, it still affects emotional wellbeing. However, in terms of severity, it tended to be rated lower overall.
+
+Pushing showed the greatest variation. It could be fairly harmless in some cases, but quite dangerous in others — particularly if the child being pushed collided with furniture or another hard surface. The severity ranged from 1 to 4, with an average around 3, making it very dependent on the context and potentially underestimated.
+
+So, looking at the plots again, hitting and biting are the main problems in the classroom as they have the highest frequencies and highest severities. 
+
+
+
+
+```{r}
+ggplot(merged_df, aes(x = Conflict_Reason)) +
+  geom_bar(fill = "tomato") +
+  labs(title = "Reasons for Conflict", x = "Reason", y = "Count") +
+  theme_minimal()
+```
+The reasons for conflict could be categorised into four: mainly toy, disagreement, sometimes attention seeking, and play leadership - a form of disagreement. Since play leadership has a very low count and it is a form of disagreement, I will merge it into disagreement category. 
+
+```{r}
+merged_df <- merged_df |>
+  mutate(Conflict_Reason = ifelse(Conflict_Reason == "Play Leadership", 
+                                  "Disagreement", Conflict_Reason))
+```
+
+Let's look at the gender.
+
+
+```{r}
+gender_freq <- merged_df |>
+  group_by(Gender, Child_ID) |>
+  summarise(Frequency = n()) |>
+  ungroup()
+
+ggplot(gender_freq, aes(x = Gender, y = Frequency)) +
+  geom_boxplot(fill = "lightcoral") +
+  labs(title = "Aggression Frequency by Gender", y = "Frequency") +
+  theme_minimal()
+```
+It seems like gender does not really matter since the median frequency is very similar. 
+```{r}
+ggplot(merged_df, aes(x = Gender, y = Aggression_Severity)) +
+  geom_boxplot(fill = "orchid") +
+  labs(title = "Aggression Severity by Gender", y = "Severity") +
+  theme_minimal()
+```
+
+There is a huge difference in terms of severity. Boys have a median severity of 4, with most of the data ranging from 3 to 5. Girls have a median severity of 2, with a range of 1 to 5. 
+By looking at these plots, I think number 7 who had the highest aggression score is a girl and she is influencing the trend. I will examine the differences in aggression in gender again after excluding number 7 from the data.
+
+```{r}
+filtered_df <- merged_df |> filter(Child_ID != 7)
+gender_freq_filtered <- filtered_df |>
+  group_by(Gender, Child_ID) |>
+  summarise(Frequency = n()) |>
+  ungroup()
+
+g3<- ggplot(gender_freq_filtered, aes(x = Gender, y = Frequency)) +
+  geom_boxplot(fill = "lightblue") +
+  labs(title = "Aggression Frequency by Gender (Excluding Child 7)", y = "Frequency") +
+  theme_minimal()
+
+# Severity comparison
+g4<- ggplot(filtered_df, aes(x = Gender, y = Aggression_Severity)) +
+  geom_boxplot(fill = "lightcoral") +
+  labs(title = "Aggression Severity by Gender (Excluding Child 7)", y = "Severity") +
+  theme_minimal()
+
+g3+g4
+```
+Excluding the number 7, the plots have changed drastically. Girls have much lower frequencies and severities of aggression compared to the boys. 
+We will proceed to a t-test to see if the gender genuinely affects a child's aggression.
+
+To do a t-test, we need to do check assumptions of normality and equal variance.
+
+```{r}
+ggdensity(filtered_df$Aggression_Severity, 
+          main = "Density of Aggression Severity", 
+          xlab = "Severity")
+
+# Normality test (Shapiro-Wilk) per gender
+shapiro.test(filtered_df$Aggression_Severity[filtered_df$Gender == "Male"])
+shapiro.test(filtered_df$Aggression_Severity[filtered_df$Gender == "Female"])
+
+```
+Unfortunately, the both distributions are not normally distributed. But we can still use Wilcoxon Test.
+
+```{r}
+leveneTest(Aggression_Severity ~ Gender, data = filtered_df)
+```
+
+P > 0.05, so equal variance. 
+
+```{r}
+wilcox.test(Aggression_Severity ~ Gender, data = filtered_df)
+```
+With a p-value of 1.654e-10, we are 95% confident that gender has a significant impact on whether a child is aggressive or not aggressive. 
+
+So the gender is one factor, what could be other factors that makes a child aggressive?
+
+First, we can look at the time of day.
+
+```{r}
+
+merged_df$Event_Time <- factor(merged_df$Event_Time, 
+                               levels = c("Morning", "Lunch", "Afternoon"))
+
+g1<- ggplot(merged_df, aes(x = Event_Time, y = Aggression_Severity)) +
+  geom_boxplot(fill = "gold") +
+  labs(title = "Aggression Severity by Time of Day", x = "Time", y = "Severity") +
+  theme_minimal()
+
+g2<- ggplot(merged_df, aes(x = Event_Time)) +
+  geom_bar(fill = "darkcyan") +
+  labs(title = "Aggression Events by Time of Day", x = "Time", y = "Count") +
+  theme_minimal()
+
+g1+g2
+```
+It is very interesting to observe that most aggression events occurred in the morning or afternoon, with noticeably fewer incidents around lunchtime. This pattern raises some important hypotheses.
+
+One possibility is that hunger plays a role in driving aggressive behaviour — when children are hungry, they may have less control over their instinctive responses, leading to increased frustration or emotional outbursts. Another theory, based on my experience as a teacher, is that children are often emotionally heightened shortly after drop-off, as they say goodbye to their parents. In these early moments of the day, they may struggle with emotional regulation and feel more unsettled.
+
+As the day progresses and they spend more time in the classroom environment, they appear to settle into routines, and their ability to regulate emotions seems to improve. This may explain the slight dip in aggression around midday. However, toward the afternoon, fatigue could also play a part in the rise of incidents again.
+
+This is, of course, my working theory based on classroom observation and the data.
+
+Let's look at development levels. 
+```{r}
+# Make sure Age is a factor
+merged_df$Age <- as.factor(merged_df$Age)
+
+# Plot 1: Language Dev vs Severity by Gender
+p1 <- ggplot(merged_df, aes(x = Language_Development, y = Aggression_Severity, colour = Gender)) +
+  geom_jitter(width = 0.2, alpha = 0.7) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(title = "Language Dev vs Aggression Severity (Gender)", x = "Language Score", y = "Severity") +
+  theme_minimal()+
+  theme(legend.position = "none")
+
+
+# Plot 2: Motor Dev vs Severity by Gender
+p2 <- ggplot(merged_df, aes(x = Motor_Development, y = Aggression_Severity, colour = Gender)) +
+  geom_jitter(width = 0.2, alpha = 0.7) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(title = "Motor Dev vs Aggression Severity (Gender)", x = "Motor Score", y = "") +
+  theme_minimal()
+
+# Define custom colours just so that we can use different colours for age and gender
+custom_colours <- c("3" = "purple", "4" = "orange")  # colours for age
+
+# Plot 3: Language Dev vs Severity by Age (with colour)
+p3 <- ggplot(merged_df, aes(x = Gender, y = Aggression_Severity, colour = Age)) +
+  geom_jitter(width = 0.2, alpha = 0.7) +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_colour_manual(values = custom_colours) +
+  labs(title = "Gender vs Aggression Severity (Age)", 
+       x = "Gender", y = "Severity") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+# Plot 4: Motor Dev vs Severity by Age
+p4 <- ggplot(merged_df, aes(x = Gender, y = Aggression_Severity, colour = Age)) +
+  geom_jitter(width = 0.2, alpha = 0.7) +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_colour_manual(values = custom_colours) +
+  labs(title = "Gender vs Aggression Severity (Age)", 
+       x = "Gender", y = "") +
+  theme_minimal()
+
+p1+p2
+```
+Once again, it’s clear that Child 7 likely has a strong influence on this pattern, so I will exclude their data when interpreting this plot.
+Among the girls, most have a language development score of 5, and they tend not to engage in severe aggressive behaviour. This suggests that many girls are able to express themselves verbally rather than resorting to physical aggression.
+
+In contrast, boys show a much wider range in language development scores. Some boys appear to be less verbal, with scores below 4. Interestingly, their aggression severity does not seem particularly high. However, there are also boys with very strong language skills, scoring 4 and 5, who still show frequent and severe aggression. Somewhat unexpectedly, most of the aggressive incidents were committed by boys who actually have high language development scores.
+
+When looking at motor skills, most girls again show strong development. With the exception of Child 7, all girls have a motor score of 4, indicating good physical development. This further highlights that Child 7 may be developmentally behind, which could be due to her age, neurological factors, or other individual circumstances. The girls’ high motor scores are associated with low aggression frequency and severity.
+
+For boys, there is once again greater variability in motor development, similar to what we saw with language. Unfortunately, the boys with higher motor skills tend to show higher aggression severity. 
+
+This makes me question, as boys age, does their aggression level go up? Without a question, age and development scores are highly correlated. 
+Lets look at the age vs severity this time.
+
+
+```{r}
+p3+p4
+
+```
+Again, we can spot that females excluding number 7 show a very low aggression severity in general. There are many more points around 1 for girls who are 4 years old. There are more points around 2 for the girls who are 3 years old. 
+
+Interestingly, the boys who are 3 years old are less aggressive in terms of frequency and severity compared to the boys who are 4 years old. This pattern is very clear as there are two distinct groups by age. It is also interesting to note that there are many more points of 4 years old regardless of gender. This could be due to the classroom mainly having 4 years old. There are more 4 years old in the dataset. So lets do a t test. 
+
+```{r}
+
+filtered_df$Age <- as.factor(filtered_df$Age)
+
+#Normality check (Shapiro-Wilk)
+shapiro_3 <- shapiro.test(filtered_df$Aggression_Severity[filtered_df$Age == "3"])
+shapiro_4 <- shapiro.test(filtered_df$Aggression_Severity[filtered_df$Age == "4"])
+
+print(shapiro_3)
+print(shapiro_4)
+
+#Levene's Test for Equal Variance ---
+leveneTest(Aggression_Severity ~ Age, data = filtered_df)
+
+wilcox_test_result <- wilcox.test(Aggression_Severity ~ Age, data = filtered_df)
+print(wilcox_test_result)
+```
+Since both Normality test and Equal variance test failed, I used non parametric wilcox test.
+The p-value is less than the significant point, there is a statistically significant difference in aggression severity between the two age groups (3 and 4 years old) at the 5% significance level.	We can reject the null hypothesis that age is independent of aggression severity.
+
+How about the parenting styles?
+```{r}
+ggplot(filtered_df, aes(x = Parenting_Style, y = Aggression_Severity)) +
+  geom_boxplot(fill = "salmon") +
+  labs(title = "Aggression Severity by Parenting Style", x = "Parenting Style", y = "Aggression_Score") +
+  theme_minimal()
+
+ggplot(filtered_df, aes(x = Family_Structure, y = Aggression_Severity)) +
+  geom_boxplot(fill = "mediumseagreen") +
+  labs(title = "Aggression Severity by Family Structure", x = "Family Structure", y = "Aggression_Score") +
+  theme_minimal()
+```
+
+The boxplot comparing aggression severity across parenting styles reveals some notable patterns. Children raised in authoritarian households display the widest range of aggression severity, from very low (1) to the maximum score (5), with a median around 2. This suggests that authoritarian parenting may lead to inconsistent outcomes in children’s emotional regulation — possibly due to rigid or punitive discipline styles. In contrast, those from democratic households show a narrower range, with most severity scores clustered around 4. While democratic parenting is often viewed as balanced and nurturing, the data here suggests that moderate to high aggression can still occur, potentially influenced by other contextual factors.
+
+Children from neglectful and overprotective households show less variability, with aggression severity consistently around 3. However, the limited number of observations in these categories makes it difficult to draw strong conclusions. Interestingly, there is an outlier in the overprotective group showing the maximum aggression severity, which may point to frustration or difficulty coping with boundaries when overprotected.
+
+Overall, the data implies that parenting style may influence aggression severity, with authoritarian approaches leading to the most diverse behavioural outcomes. However, further analysis with a larger and more balanced sample would help clarify these trends.
+
+
+The boxplot comparing aggression severity by family structure reveals a few interesting patterns, although interpretation should be made with caution due to likely small group sizes.
+
+Children from ‘normal’ family structures show the widest range of aggression severity, from 1 to 5, with a median around 3. This group also appears to have the largest number of observations, as indicated by the presence of a full box and whiskers. The data suggests that while many children in this group exhibit moderate aggression, there is considerable variability, likely influenced by individual temperament, parenting style, and classroom dynamics.
+
+In contrast, children from ‘high conflict’ family structures show less variability, with severity clustering around 3 and a single lower outlier. Interestingly, although one might expect higher aggression in children from high-conflict homes, this group appears to exhibit moderate aggression, which could indicate coping strategies, underreporting, or differences in teacher perceptions.
+
+Children from ‘single mother’ households also show moderate to high aggression severity, with a median at 4 and a small range (3 to 5), including a single high outlier. This narrow range might reflect fewer data points, but it could also suggest a consistently elevated level of emotional arousal or stress in this group.
+
+Overall, while the normal family structure group displays the broadest range of behaviours, both the high conflict and single mother groups show less variability but a tendency toward moderate to high aggression. Further investigation with larger and more balanced samples would help clarify whether these patterns hold across broader populations.
+
+Lastly, lets look at other factors.
+
+```{r}
+# 1. Boxplots of aggression severity vs development factors
+p1 <- ggplot(merged_df, aes(x = as.factor(Social_Emotional_Development), y = Aggression_Score)) +
+  geom_boxplot(fill = "lightblue") +
+  labs(title = "Aggression Severity vs Social Emotional Development", x = "Social-Emotional Score", y = "Aggression_Score") +
+  theme_minimal()
+
+p2 <- ggplot(merged_df, aes(x = as.factor(Self_Esteem), y = Aggression_Score)) +
+  geom_boxplot(fill = "mediumpurple") +
+  labs(title = "Aggression Severity vs Self-Esteem", x = "Self-Esteem Score", y = "Aggression_Score") +
+  theme_minimal()
+
+p3 <- ggplot(merged_df, aes(x = Mental_Health_Issue, y = Aggression_Score)) +
+  geom_boxplot(fill = "salmon") +
+  labs(title = "Aggression Severity vs Mental Health Issues", x = "Mental Health Issue", y = "Aggression_Score") +
+  theme_minimal()
+
+p4 <- ggplot(merged_df, aes(x = as.factor(Peer_Relationship), y = Aggression_Score)) +
+  geom_boxplot(fill = "darkolivegreen3") +
+  labs(title = "Aggression Severity vs Peer Relationships", x = "Peer Relationship Score", y = "Aggression_Score") +
+  theme_minimal()
+
+p5 <- ggplot(merged_df, aes(x = as.factor(Teacher_Relationship), y = Aggression_Score)) +
+  geom_boxplot(fill = "goldenrod") +
+  labs(title = "Aggression Severity vs Teacher Relationships", x = "Teacher Relationship Score", y = "Aggression_Score") +
+  theme_minimal()
+
+(p1 | p2) 
+```
+The two boxplots explore how children’s overall aggression scores (a product of frequency and severity) relate to their social-emotional development and self-esteem.
+
+Social-Emotional Development
+
+Interestingly, the relationship between social-emotional development and aggression score is not linear. Children with a score of 2 show the highest aggression scores, with a notable clustering of scores between 40 and 60. In contrast, children scoring 3 or 4 tend to show lower aggression, and those with the lowest score (1) also exhibit moderate levels. This may suggest that children who are somewhat emotionally aware (score 2) but still developing regulation skills are more prone to frustration and behavioural outbursts, while those with very low awareness may be more passive, and those with higher skills better manage their emotions.
+
+Self-Esteem
+
+Aggression also varies across self-esteem scores, with an especially wide range of scores seen at self-esteem level 5. While one might expect higher self-esteem to correlate with lower aggression, the data here suggests a more complex picture. Some children with high self-esteem still display high aggression scores, potentially due to confidence being expressed in dominant or confrontational ways. Meanwhile, children with lower self-esteem (score 2) tend to show more moderate aggression, though the spread remains noticeable. The outlier with a self-esteem score of 4 shows no aggression, though this likely represents a single case.
+
+The most concerning pattern appears in the missing self-esteem group (NA) — which, will be discussed very shortly, corresponds to children with mental health challenges. This group shows the widest range of aggression, including some of the highest scores, reinforcing the earlier observation that these children face significant emotional regulation difficulties that impact their behaviour.
+```{r}
+(p3 | p4 | p5)
+
+```
+
+
+The boxplots above show how a child’s overall aggression score (a product of frequency and severity) varies based on three key emotional and social factors: mental health issues, peer relationships, and teacher relationships.
+
+Mental Health Issues
+
+Children identified with a mental health issue tend to have higher and more variable aggression scores compared to those without. While some children with mental health challenges have aggression scores similar to their peers, others score significantly higher, suggesting that mental health difficulties can contribute to more frequent or more intense aggressive behaviours. The broad spread of the data also implies differing needs and behavioural responses within this group.
+
+Peer Relationships
+
+The relationship between aggression and peer relationship scores is less linear. Children with very low scores (1–2) tend to show higher aggression scores overall, indicating that difficulty getting along with peers may escalate conflict. Interestingly, even some children with relatively high peer relationship scores (4) show elevated aggression scores, suggesting that peer conflicts may still occur even when social skills are stronger — possibly due to external triggers like frustration or competition. The lowest aggression is observed in those with a perfect peer relationship score (5), although this group appears to be very small.
+
+Teacher Relationships
+
+A similar pattern is seen in the data for teacher relationship scores. Children with weaker teacher relationships (score of 2) tend to have the highest aggression scores, and there’s a wide variability. This suggests that a lack of strong connection or trust with the teacher may be linked to more dysregulated or reactive behaviours. Those with the highest scores (4–5) generally show lower aggression, highlighting the importance of secure teacher-child relationships as a protective factor.
+
+```{r}
+merged_df|>
+  filter(Mental_Health_Issue == "Yes")|>
+  select(Child_ID,Self_Esteem,Mental_Health_Issue)
+```
+
+We can see that the three missing values in the Self-Esteem column correspond to children who were identified as having a mental health issue. This was due to the difficulty in accurately assessing self-esteem in these particular cases.
+
+Self-esteem was generally measured through observations of how children responded to praise, criticism, and their ability to express confidence in social or learning situations. However, the children with mental health challenges presented in unique ways — for example, some were unable to verbally communicate, while others appeared to be unaffected by peer or adult feedback, making traditional observation-based assessments unsuitable or unreliable.
+
+As a result, self-esteem scores were not recorded for these children, reflecting the need for alternative or adapted assessment methods for children with complex developmental or emotional needs.
+
+
+```{r}
+# Teacher intervention types
+ggplot(filtered_df, aes(x = Teacher_Intervention)) +
+  geom_bar(fill = "darkgreen") +
+  labs(title = "Teacher Interventions", x = "Intervention Type", y = "Count") +
+  theme_minimal()
+
+# Outcome by intervention
+ggplot(filtered_df, aes(x = Teacher_Intervention, fill = Outcome)) +
+  geom_bar(position = "fill") +
+  labs(title = "Outcomes by Intervention", y = "Proportion", x = "Teacher Intervention") +
+  theme_minimal()
+```
+This plot shows the frequency of different types of teacher intervention. The most common approaches were positive intervention and harsh intervention, with a smaller number of cases labelled as inadequate interventions. These inadequate responses were usually due to challenging classroom situations, where the teacher’s immediate priority had to be elsewhere. For instance, if one child verbally abused another and the second child responded with physical aggression, the teacher’s attention naturally focused on ensuring the safety of the injured child and responding to the more severe behaviour first.
+
+The reason why not all interventions were positive is because, like many educators, I was exploring different strategies in my practice. Over time, as I gained more experience and confidence, I came to believe strongly in the effectiveness of positive intervention. However, the data also reflects the actions of other teachers in the classroom — some of whom may prefer a more punitive or disciplinary approach. This explains why harsh interventions are still quite common, even though positive intervention remains the dominant strategy overall.
+```{r}
+library(ggplot2)
+library(dplyr)
+
+# Make sure data is ordered
+timeline_plot_df <- merged_df %>%
+  arrange(Child_ID, Event_ID) %>%
+  mutate(Outcome = as.factor(Outcome))
+
+# Plot with faceting for each child
+ggplot(timeline_plot_df, aes(x = Event_ID, y = Aggression_Severity, group = Child_ID, colour = Outcome)) +
+  geom_line(alpha = 0.4, linewidth = 1) +
+  geom_point(size = 3) +
+  labs(
+    title = "Aggression Severity Timeline per Child",
+    x = "Event ID (Chronological)",
+    y = "Aggression Severity",
+    colour = "Intervention Outcome"
+  ) +
+  facet_wrap(~ Child_ID, scales = "free_x") +  # one panel per child
+  theme_minimal() +
+  theme(
+    strip.text = element_text(size = 10, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+
+```
+
+Aggression Severity Timelines and the Impact of Intervention Outcomes
+
+The timeline plot above visualises the progression of aggression severity over time for each child, with each point representing an aggression incident and coloured according to the outcome of the teacher’s intervention. This format allows us to closely examine how children’s aggressive behaviour changes following different intervention strategies.
+
+Successful Dialogue
+
+Children who consistently experienced successful dialogues following aggressive incidents tended to show stable behaviour over time. For example, Child 4, 5, 9, and 10 maintained consistent aggression severity scores, generally around 3 or 4, with little fluctuation. Notably, Child 13 showed a clear improvement, with severity decreasing from 3 to 1 over a series of positive interventions. This pattern suggests that positive intervention is not considerably associated with behavioural regulation and de-escalation.
+
+Child Avoids Dialogue
+
+In contrast, children who frequently avoided dialogue — such as Child 3, 11, and particularly Child 12 — exhibited persistently high aggression scores. For instance, Child 12’s severity remained at level 4 throughout the observed events, despite multiple interventions. These findings imply that when children do not engage with conflict resolution or restorative practices, there is little to no improvement in their aggressive behaviour.
+
+No Resolution
+
+For some children, a lack of resolution led to stagnation or even escalation in aggressive behaviour. Child 7 and Child 8, who experienced a series of unresolved incidents, maintained high and stable aggression scores (e.g. level 4). Child 15 is particularly notable: after several unresolved incidents, their aggression score increased sharply from 3 to 5. This suggests that unresolved conflict may contribute to a worsening pattern of behaviour over time.
+
+Mixed Patterns and Complexity
+
+Some children, such as Child 1 and Child 11, displayed more variable patterns, alternating between different types of outcomes. These cases reflect the complex nature of child behaviour and the potential influence of other contextual factors (e.g. fatigue, peer conflict, emotional regulation challenges). Nonetheless, even in these mixed cases, the periods following successful dialogue tended to show either stability or a slight reduction in aggression severity.
+
+Summary
+Positive interventions that lead to successful dialogue are associated with stabilised or reduced aggression, whereas unresolved incidents or avoidance of dialogue correlate with sustained or escalating aggressive behaviours. 
+
+
+```{r}
+library(rpart)
+library(rpart.plot)
+
+tree_data <- merged_df|>
+  select(Aggression_Score, Gender, Mental_Health_Issue, Parenting_Style, Family_Structure,
+         Language_Development, Motor_Development, Social_Emotional_Development,
+         Self_Esteem, Peer_Relationship, Teacher_Relationship)|>
+  na.omit()
+
+# Build regression tree
+aggression_tree <- rpart(Aggression_Score ~ ., data = tree_data, method = "anova")
+
+# Plot the tree
+rpart.plot(aggression_tree,
+           type = 2,
+           extra = 101,
+           fallen.leaves = TRUE,
+           main = "Regression Tree Predicting Aggression Score")
+```
+
+The regression tree provides a visual summary of how different child-level and environmental factors predict overall aggression scores (a combination of frequency and severity). Each split in the tree represents a key decision point that best divides the data based on differences in aggression. The end nodes (leaves) show the predicted aggression score and the proportion of children falling into each group.
+
+Gender happens to be the primary split. Girls tended to have much lower aggression score compared to the boys with a mean of 9.1. 
+Social Emotional Development level happens to be the secondary split among boys. Those with very high scores (≥ 4) had a moderate predicted aggression score (mean = 19). Boys with lower social-emotional development (< 4) had even higher aggression, especially when further interacting with peer and parenting dynamics. For boys with moderate social-emotional development (score ≥ 3), peer relationships and parenting style play a role.
+
+This tree closely aligns with my lived experience in the classroom. In general, it is boys who tend to exhibit more frequent and severe aggressive behaviours, which is consistent with the tree’s first and most impactful split. From my perspective as a teacher, I’ve observed that girls are often more socially and emotionally developed at this age, which likely helps them regulate their behaviour and navigate peer conflict more effectively. It is also hormonal. Boys have more testosterone, which makes them aggressive. However, I do not have any scientific evidence to support how much difference in testosterone or any other hormones children in different genders have at this age. But regardless, I can confidently say boys at this age believe that punches are faster than words. 
+
+Regarding parenting styles, I have found that they do not always have a visible day-to-day impact unless the home situation is particularly extreme, such as in cases involving alcoholism or neglect. In such instances, the child’s behaviour often reflects deeper emotional distress, and their ability to respond to intervention can be compromised.
+
+
+
+This analysis has revealed several important patterns in the relationship between child development, intervention strategies, and aggressive behaviour. The timeline view, in particular, highlighted the value of successful dialogue in reducing aggression over time, while also emphasising the challenges faced when interventions fail or children disengage.
+
+As a next step, future work could focus on:
+	•	Exploring whether children can be grouped into distinct behavioural profiles for more tailored intervention
+	•	Investigating the long-term impact of repeated positive or inadequate interventions over a full term or year
+	• Providing social and emotional based curriculum to boys 
+	• Provide an intervention that supports their social-emotional learning. 
+	• Evaluate if current positive intervention successfully promotes social emotional learning for boys.
+
+Ultimately, this analysis could inform the development of a more structured, evidence-based intervention framework to support teachers in responding to aggression constructively and consistently across early childhood settings.

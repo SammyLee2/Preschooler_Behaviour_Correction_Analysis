@@ -1,0 +1,119 @@
+Child_ID,Name,Event_ID,Event_Time,Conflict_Reason,Aggression_Type,Aggression_Severity,Teacher_Intervention,Outcome
+1,Walker,1,Morning,Disagreement,Hitting,4,Positive Intervention,Child Avoids Dialogue
+1,Walker,2,Morning,Disagreement,Hitting,4,Positive Intervention,Successful Dialogue
+1,Walker,3,Morning,Disagreement,Throwing Object,4,Positive Intervention,Successful Dialogue
+1,Walker,4,Lunch,Play Leadership,Throwing Object,4,Harsh Intervention,Child Avoids Dialogue
+1,Walker,5,Lunch,Play Leadership,Throwing Object,4,Harsh Intervention,Child Avoids Dialogue
+1,Walker,6,Afternoon,Disagreement,Biting,5,Harsh Intervention,Child Avoids Dialogue
+1,Walker,7,Morning,Disagreement,Hitting,4,Positive Intervention,Successful Dialogue
+1,Walker,8,Morning,Toy,Hitting,4,Positive Intervention,Child Avoids Dialogue
+1,Walker,9,Morning,Disagreement,Hitting,4,Positive Intervention,Successful Dialogue
+1,Walker,10,Afternoon,Disagreement,Hitting,4,Positive Intervention,Successful Dialogue
+1,Walker,11,Afternoon,Toy,Verbal Abuse,1,Positive Intervention,Successful Dialogue
+2,Riley,12,Morning,Play Leadership,Verbal Abuse,1,Inadequate Intervention,No Resolution
+2,Riley,13,Morning,Toy,Verbal Abuse,1,Inadequate Intervention,No Resolution
+2,Riley,14,Morning,Toy,Throwing Object,4,Harsh Intervention,Successful Dialogue
+2,Riley,15,Morning,Play Leadership,Throwing Object,4,Harsh Intervention,Successful Dialogue
+2,Riley,16,Afternoon,Disagreement,Hitting,5,Harsh Intervention,Successful Dialogue
+2,Riley,17,Afternoon,Disagreement,Throwing Object,4,Harsh Intervention,Successful Dialogue
+3,Laura,18,Morning,Attention Seeking,Verbal Abuse,1,Inadequate Intervention,Child Avoids Dialogue
+3,Laura,19,Morning,Attention Seeking,Verbal Abuse,1,Inadequate Intervention,Child Avoids Dialogue
+3,Laura,20,Morning,Attention Seeking,Pushing,2,Inadequate Intervention,Child Avoids Dialogue
+3,Laura,21,Lunch,Toy,Verbal Abuse,1,Inadequate Intervention,Child Avoids Dialogue
+3,Laura,22,Lunch,Toy,Verbal Abuse,1,Positive Intervention,Child Avoids Dialogue
+3,Laura,23,Afternoon,Toy,Pushing,1,Positive Intervention,Child Avoids Dialogue
+3,Laura,24,Morning,Toy,Pushing,1,Positive Intervention,Child Avoids Dialogue
+3,Laura,25,Morning,Attention Seeking,Verbal Abuse,1,Inadequate Intervention,Successful Dialogue
+3,Laura,26,Morning,Attention Seeking,Verbal Abuse,1,Inadequate Intervention,Successful Dialogue
+4,Kuba,27,Afternoon,Toy,Hitting,4,Positive Intervention,Successful Dialogue
+4,Kuba,28,Afternoon,Toy,Hitting,4,Positive Intervention,Successful Dialogue
+4,Kuba,29,Morning,Toy,Hitting,4,Positive Intervention,Successful Dialogue
+4,Kuba,30,Morning,Toy,Hitting,3,Positive Intervention,Successful Dialogue
+4,Kuba,31,Morning,Toy,Hitting,3,Positive Intervention,Successful Dialogue
+4,Kuba,32,Morning,Toy,Hitting,3,Positive Intervention,Successful Dialogue
+4,Kuba,33,Afternoon,Disagreement,Hitting,3,Harsh Intervention,Successful Dialogue
+4,Kuba,34,Afternoon,Disagreement,Hitting,3,Harsh Intervention,Successful Dialogue
+4,Kuba,35,Morning,Disagreement,Hitting,3,Harsh Intervention,Successful Dialogue
+4,Kuba,36,Morning,Disagreement,Hitting,2,Harsh Intervention,Successful Dialogue
+4,Kuba,37,Morning,Disagreement,Biting,4,Positive Intervention,Successful Dialogue
+4,Kuba,38,Lunch,Disagreement,Hitting,3,Positive Intervention,Successful Dialogue
+5,Tangaroa,39,Lunch,Toy,Pushing,4,Positive Intervention,Successful Dialogue
+5,Tangaroa,40,Afternoon,Toy,Pushing,4,Positive Intervention,Successful Dialogue
+5,Tangaroa,41,Morning,Toy,Pushing,4,Harsh Intervention,Successful Dialogue
+5,Tangaroa,42,Morning,Disagreement,Hitting,4,Harsh Intervention,Successful Dialogue
+5,Tangaroa,43,Morning,Disagreement,Hitting,5,Harsh Intervention,Successful Dialogue
+5,Tangaroa,44,Afternoon,Disagreement,Hitting,5,Positive Intervention,Successful Dialogue
+5,Tangaroa,45,Afternoon,Toy,Hitting,3,Positive Intervention,Successful Dialogue
+5,Tangaroa,46,Morning,Toy,Hitting,2,Positive Intervention,Successful Dialogue
+6,Alice,47,Morning,Disagreement,Verbal Abuse,2,Positive Intervention,Successful Dialogue
+6,Alice,48,Morning,Disagreement,Verbal Abuse,2,Positive Intervention,Successful Dialogue
+6,Alice,49,Morning,Disagreement,Verbal Abuse,2,Positive Intervention,Successful Dialogue
+6,Alice,50,Afternoon,Disagreement,Verbal Abuse,2,Positive Intervention,Successful Dialogue
+7,Maxine,51,Afternoon,Toy,Biting,5,Inadequate Intervention,No Resolution
+7,Maxine,52,Morning,Toy,Biting,5,Inadequate Intervention,No Resolution
+7,Maxine,53,Morning,Toy,Biting,5,Inadequate Intervention,No Resolution
+7,Maxine,54,Morning,Toy,Biting,5,Positive Intervention,No Resolution
+7,Maxine,55,Lunch,Toy,Biting,5,Positive Intervention,No Resolution
+7,Maxine,56,Lunch,Toy,Biting,5,Inadequate Intervention,No Resolution
+7,Maxine,57,Afternoon,Toy,Biting,5,Positive Intervention,No Resolution
+7,Maxine,58,Morning,Toy,Biting,55,Positive Intervention,No Resolution
+7,Maxine,59,Morning,Toy,Biting,5,Positive Intervention,No Resolution
+7,Maxine,60,Morning,Toy,Biting,5,Inadequate Intervention,No Resolution
+7,Maxine,61,Afternoon,Toy,Biting,5,Inadequate Intervention,No Resolution
+7,Maxine,62,Afternoon,Toy,Biting,5,Inadequate Intervention,No Resolution
+7,Maxine,63,Afternoon,Toy,Biting,5,Inadequate Intervention,No Resolution
+7,Maxine,64,Afternoon,Toy,Biting,5,Inadequate Intervention,No Resolution
+7,Maxine,65,Afternoon,Toy,Biting,5,Inadequate Intervention,No Resolution
+7,Maxine,66,Morning,Toy,Biting,5,Inadequate Intervention,No Resolution
+8,Ethan,67,Morning,Toy,Biting,3,Inadequate Intervention,No Resolution
+8,Ethan,68,Lunch,Toy,Biting,3,Inadequate Intervention,No Resolution
+8,Ethan,69,Lunch,Toy,Biting,3,Inadequate Intervention,No Resolution
+9,Logan,70,Morning,Disagreement,Hitting,4,Positive Intervention,Successful Dialogue
+9,Logan,71,Morning,Disagreement,Hitting,4,Positive Intervention,Child Avoids Dialogue
+9,Logan,72,Morning,Toy,Hitting,4,Positive Intervention,Successful Dialogue
+9,Logan,73,Afternoon,Disagreement,Hitting,4,Positive Intervention,Child Avoids Dialogue
+9,Logan,74,Afternoon,Disagreement,Hitting,4,Positive Intervention,Successful Dialogue
+9,Logan,75,Afternoon,Disagreement,Hitting,4,Positive Intervention,Successful Dialogue
+9,Logan,76,Afternoon,Toy,Hitting,4,Positive Intervention,Successful Dialogue
+10,Nyla,77,Afternoon,Disagreement,Hitting,2,Positive Intervention,Successful Dialogue
+10,Nyla,78,Morning,Attention Seeking,Hitting,2,Positive Intervention,Successful Dialogue
+10,Nyla,79,Morning,Attention Seeking,Hitting,2,Positive Intervention,Successful Dialogue
+10,Nyla,80,Lunch,Disagreement,Hitting,2,Positive Intervention,Successful Dialogue
+11,Malakai,81,Lunch,Toy,Hitting,4,Harsh Intervention,Successful Dialogue
+11,Malakai,82,Morning,Toy,Throwing Object,5,Harsh Intervention,Child Avoids Dialogue
+11,Malakai,83,Morning,Disagreement,Throwing Object,5,Harsh Intervention,Child Avoids Dialogue
+11,Malakai,84,Morning,Disagreement,Hitting,4,Positive Intervention,Successful Dialogue
+11,Malakai,85,Afternoon,Toy,Hitting,4,Positive Intervention,Successful Dialogue
+11,Malakai,86,Afternoon,Toy,Hitting,4,Positive Intervention,Successful Dialogue
+12,Theo,87,Afternoon,Attention Seeking,Hitting,4,Harsh Intervention,Child Avoids Dialogue
+12,Theo,88,Afternoon,Toy,Pushing,3,Harsh Intervention,Child Avoids Dialogue
+12,Theo,89,Afternoon,Attention Seeking,Pushing,3,Harsh Intervention,Child Avoids Dialogue
+12,Theo,90,Morning,Toy,Pushing,3,Harsh Intervention,Child Avoids Dialogue
+12,Theo,91,Morning,Attention Seeking,Hitting,4,Positive Intervention,Child Avoids Dialogue
+12,Theo,92,Morning,Toy,Pushing,3,Positive Intervention,Child Avoids Dialogue
+12,Theo,93,Morning,Toy,Pushing,3,Harsh Intervention,Child Avoids Dialogue
+13,Hunter,94,Morning,Disagreement,Hitting,3,Positive Intervention,Successful Dialogue
+13,Hunter,95,Lunch,Disagreement,Hitting,3,Positive Intervention,Successful Dialogue
+13,Hunter,96,Lunch,Disagreement,Verbal Abuse,1,Harsh Intervention,Successful Dialogue
+14,Cairo,97,Afternoon,Disagreement,Hitting,5,Positive Intervention,Successful Dialogue
+14,Cairo,98,Morning,Attention Seeking,Hitting,4,Positive Intervention,Successful Dialogue
+14,Cairo,99,Morning,Attention Seeking,Hitting,5,Harsh Intervention,Successful Dialogue
+14,Cairo,100,Morning,Attention Seeking,Hitting,3,Positive Intervention,Successful Dialogue
+14,Cairo,101,Afternoon,Attention Seeking,Hitting,3,Positive Intervention,Successful Dialogue
+14,Cairo,102,Afternoon,Attention Seeking,Hitting,3,Harsh Intervention,Successful Dialogue
+14,Cairo,103,Afternoon,Attention Seeking,Hitting,4,Inadequate Intervention,Successful Dialogue
+14,Cairo,104,Afternoon,Toy,Hitting,5,Inadequate Intervention,Successful Dialogue
+14,Cairo,105,Morning,Toy,Hitting,5,Inadequate Intervention,Successful Dialogue
+14,Cairo,106,Morning,Toy,Hitting,4,Positive Intervention,Successful Dialogue
+14,Cairo,107,Lunch,Toy,Hitting,3,Harsh Intervention,Successful Dialogue
+14,Cairo,108,Lunch,Attention Seeking,Hitting,3,Positive Intervention,Successful Dialogue
+14,Cairo,109,Afternoon,Attention Seeking,Hitting,3,Harsh Intervention,Successful Dialogue
+15,Hiro,110,Morning,Toy,Hitting,3,Harsh Intervention,No Resolution
+15,Hiro,111,Morning,Toy,Hitting,3,Harsh Intervention,No Resolution
+15,Hiro,112,Morning,Toy,Hitting,3,Harsh Intervention,No Resolution
+15,Hiro,113,Afternoon,Attention Seeking,Hitting,3,Harsh Intervention,No Resolution
+15,Hiro,114,Afternoon,Toy,Hitting,3,Harsh Intervention,No Resolution
+15,Hiro,115,Morning,Attention Seeking,Hitting,3,Harsh Intervention,No Resolution
+15,Hiro,116,Morning,Toy,Hitting,3,Positive Intervention,No Resolution
+15,Hiro,117,Afternoon,Toy,Biting,5,Positive Intervention,No Resolution
+15,Hiro,118,Afternoon,Toy,Biting,5,Harsh Intervention,No Resolution
